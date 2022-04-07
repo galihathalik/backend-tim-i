@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
 import { updateUserDto } from './dto/update-user.dto';
-import { User } from './entity/users.entity';
+import { User } from 'src/entities/users.entity';
 import { UserRepository } from './repository/users.repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -15,6 +16,26 @@ export class UsersService {
      
     async getAllUser(): Promise<User[]>{
         return await this.userRepository.getAllUser();
+    }
+
+    async checkVerifiedEmail(email: string) {
+        const verified = await this.userRepository.findOne({ where: { email } });
+    
+        if (verified.emailVerified) {
+          return true;
+        } else {
+          return false
+        }
+      }
+
+    async EmailHasBeenConfirmed(email: string) {
+        return this.userRepository.update({ email }, {
+            emailVerified: true
+        });
+    }
+
+    async getByEmail(email: string): Promise<User> {
+        return this.userRepository.findOne({ where: { email } });
     }
 
     async getUserById(id: string): Promise<User>{
@@ -29,15 +50,24 @@ export class UsersService {
         return await this.userRepository.findOne(id);
     }
 
-    async Register(createUserDto: CreateUserDto): Promise<void>{
-        return await this.userRepository.register(createUserDto);
+    async RegisterAdmin(createUserDto: CreateUserDto, role): Promise<void>{
+        return await this.userRepository.register(createUserDto, role);
+    }
+
+    async RegisterCustomer(createUserDto: CreateUserDto, role): Promise<void>{
+        return await this.userRepository.register(createUserDto, role);
+    }
+
+    async RegisterDriver(createUserDto: CreateUserDto, role): Promise<void>{
+        return await this.userRepository.register(createUserDto, role);
     }
 
     async updateUser(id: string, updateUserDto): Promise<void>{
         const { username, password, email, num_phone } = updateUserDto;
         const user = await this.getUserById(id);
         user.username = username;
-        user.password = password;
+        user.salt = await bcrypt.getSalt();
+        user.password = await bcrypt.hash(password, user.salt);
         user.email = email;
         user.num_phone = num_phone;
 
@@ -51,7 +81,7 @@ export class UsersService {
         }
     }
 
-    async validateUser(email: string, password: string): Promise<User>{
-        return await this.userRepository.validateUser(email, password);
+    async validateUser(username: string, email: string, password: string): Promise<User>{
+        return await this.userRepository.validateUser(username, email, password);
     }
 }

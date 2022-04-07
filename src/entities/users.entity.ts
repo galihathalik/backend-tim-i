@@ -1,6 +1,6 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
-import { RefreshToken } from "src/auth/entity/refresh-token.entity";
+import { RefreshToken } from "src/entities/refresh-token.entity";
 
 @Entity()
 export class User extends BaseEntity{
@@ -21,6 +21,18 @@ export class User extends BaseEntity{
 
     @Column({ unique: true })
     num_phone: string;
+
+    @Column()
+    role: string;
+
+    @Column({ default: false })
+    emailVerified: boolean;
+
+    @CreateDateColumn()
+    create_at: Date;
+
+    @UpdateDateColumn()
+    update_at: Date;
 
     @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, { eager: true })
     refreshToken: RefreshToken[];

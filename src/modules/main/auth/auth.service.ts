@@ -2,13 +2,14 @@ import { Injectable, InternalServerErrorException, NotFoundException, Unauthoriz
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { refrestTokenConfig } from 'src/config/jwt.config';
-import { User } from 'src/users/entity/users.entity';
-import { UsersService } from 'src/users/users.service';
+import { User } from 'src/entities/users.entity';
+import { UsersService } from 'src/modules/main/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { refreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { LoginResponse } from './interface/login-response.interface';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { TokenExpiredError } from 'jsonwebtoken';
+import { retry } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -19,17 +20,55 @@ export class AuthService {
         private readonly refreshTokenRepository: RefreshTokenRepository,
     ){}
 
-    async login(LoginDto: LoginDto): Promise<LoginResponse>{
-        const { email, password } = LoginDto;
+    async loginAdmin(LoginDto: LoginDto): Promise<LoginResponse>{
+        const { username, email, password } = LoginDto;
 
-        const user = await this.usersService.validateUser(email, password);
+        const user = await this.usersService.validateUser(username, email, password);
         if(!user){
-            throw new UnauthorizedException('Email atau Password salah');
+            throw new UnauthorizedException('Username atau Email atau Password salah');
+        }
+        if(user.role != `Admin`){
+            throw new UnauthorizedException('Anda Tidak Memiliki Akses');
         }
 
-        const access_token = await this.createAccessToken(user);
+        const access_token = await this.createAccessToken(user); 
         const refresh_token = await this.createRefreshToken(user);
-        return { access_token, refresh_token} as LoginResponse;
+        const berhasil = `berhasil login sebagai driver`;
+        return { access_token, refresh_token, berhasil} as LoginResponse;
+    }
+
+    async loginCustomer(LoginDto: LoginDto): Promise<LoginResponse>{
+        const { username, email, password } = LoginDto;
+
+        const user = await this.usersService.validateUser(username, email, password);
+        if(!user){
+            throw new UnauthorizedException('Username atau Email atau Password salah');
+        }
+        if(user.role != `Customer`){
+            throw new UnauthorizedException('Anda Tidak Memiliki Akses');
+        }
+
+        const access_token = await this.createAccessToken(user); 
+        const refresh_token = await this.createRefreshToken(user);
+        const berhasil = `berhasil login sebagai customer`;
+        return { access_token, refresh_token, berhasil} as LoginResponse;
+    }
+
+    async loginDriver(LoginDto: LoginDto): Promise<LoginResponse>{
+        const { username, email, password } = LoginDto;
+
+        const user = await this.usersService.validateUser(username, email, password);
+        if(!user){
+            throw new UnauthorizedException('Username atau Email atau Password salah');
+        }
+        if(user.role != `Driver`){
+            throw new UnauthorizedException('Anda Tidak Memiliki Akses');
+        }
+
+        const access_token = await this.createAccessToken(user); 
+        const refresh_token = await this.createRefreshToken(user);
+        const berhasil = `berhasil login sebagai driver`;
+        return { access_token, refresh_token, berhasil} as LoginResponse;
     }
 
     async refreshAccessToken(refreshTokenDto: refreshAccessTokenDto): Promise<{ access_token: string }>{

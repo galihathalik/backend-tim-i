@@ -3,7 +3,7 @@ import { query } from "express";
 import { filter } from "rxjs";
 import { EntityRepository, Repository } from "typeorm";
 import { CreateUserDto } from "../dto/create-user.dto";
-import { User } from "../entity/users.entity";
+import { User } from "src/entities/users.entity";
 import * as bcrypt from 'bcrypt';
 import { Duplex } from "stream";
 
@@ -14,8 +14,8 @@ export class UserRepository extends Repository<User>{
         return await query.getMany();
     }
 
-    async register(createUserDto: CreateUserDto): Promise<void> {
-        const { username, password, email, num_phone } = createUserDto;
+    async register(createUserDto: CreateUserDto, role): Promise<void> {
+        const { username, password, email, num_phone} = createUserDto;
 
         const user = this.create();
         user.username = username;
@@ -23,6 +23,7 @@ export class UserRepository extends Repository<User>{
         user.password = await bcrypt.hash(password, user.salt);
         user.email = email;
         user.num_phone = num_phone;
+        user.role = role;
 
         try{
             await user.save();
@@ -31,17 +32,19 @@ export class UserRepository extends Repository<User>{
                 throw new ConflictException(`Email/Number Phone ${email}${num_phone} Already Used`);
             }else{
                 throw new InternalServerErrorException(e);
-            }
-            
-             
+            }      
         }
     }
 
-    async validateUser(email: string, password: string): Promise<User>{
-        const user = await this.findOne({ email });
+    async validateUser(username: string, email: string, password: string): Promise<User>{
+        const userEmail = await this.findOne({ email });
+        const userUsername = await this.findOne({ username });
+        if(userEmail && (await userEmail.validatePassword(password))){
+            return userEmail;
+        }
 
-        if(user && (await user.validatePassword(password))){
-            return user;
+        if(userUsername && (await userUsername.validatePassword(password))){
+            return userUsername;
         }
         return null;
     }
