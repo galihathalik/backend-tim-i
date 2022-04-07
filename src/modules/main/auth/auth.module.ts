@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from '../../../utils/jwt.strategy';
 
 @Module({
   imports: [JwtModule.register(jwtConfig), TypeOrmModule.forFeature([RefreshTokenRepository]), UsersModule],
