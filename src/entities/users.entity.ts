@@ -1,6 +1,10 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { RefreshToken } from "src/entities/refresh-token.entity";
+import { Penumpang } from "src/entities/penumpang.entity";
+import { Sopir } from "src/entities/sopir.entity";
+import { Admin } from "src/entities/admin.entity";
+import { string } from "joi";
 
 @Entity()
 export class User extends BaseEntity{
@@ -31,10 +35,19 @@ export class User extends BaseEntity{
     @CreateDateColumn()
     create_at: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn() 
     update_at: Date;
 
-    @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, { eager: true })
+    @OneToOne(() => Penumpang, (penumpang) => penumpang.user, {onDelete:'CASCADE', eager:true})
+    penumpang: Penumpang;
+
+    @OneToOne(() => Sopir, (sopir) => sopir.user, {onDelete:'CASCADE', eager: true})
+    sopir: Sopir;
+
+    @OneToOne(() => Admin, (admin) => admin.user, {onDelete:'CASCADE', eager: true})
+    admin: Admin;
+
+    @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {onDelete:'CASCADE', eager: true })
     refreshToken: RefreshToken[];
 
     async validatePassword(password: string): Promise<boolean>{

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -6,12 +6,19 @@ import { updateUserDto } from './dto/update-user.dto';
 import { User } from 'src/entities/users.entity';
 import { UserRepository } from './repository/users.repository';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import EmailService from 'src/modules/support/email/email.service';
+import { jwtConfig } from 'src/config/jwt.config';
+import { CreatePenumpangDto } from './dto/create-penumpang.dto';
+
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserRepository) 
-        private readonly userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly jwtService: JwtService,
+        private readonly emailService: EmailService
     ) {}
      
     async getAllUser(): Promise<User[]>{
@@ -51,15 +58,15 @@ export class UsersService {
     }
 
     async RegisterAdmin(createUserDto: CreateUserDto, role): Promise<void>{
-        return await this.userRepository.register(createUserDto, role);
+        return await this.userRepository.registerAdmin(createUserDto, role);
     }
 
-    async RegisterCustomer(createUserDto: CreateUserDto, role): Promise<void>{
-        return await this.userRepository.register(createUserDto, role);
+    async RegisterCustomer(createUserDto: CreateUserDto, createPenumpang: CreatePenumpangDto, role): Promise<void>{
+        return await this.userRepository.registerPenumpang(createUserDto, createPenumpang, role);
     }
 
     async RegisterDriver(createUserDto: CreateUserDto, role): Promise<void>{
-        return await this.userRepository.register(createUserDto, role);
+        return await this.userRepository.registerSopir(createUserDto, role);
     }
 
     async updateUser(id: string, updateUserDto): Promise<void>{
@@ -84,4 +91,55 @@ export class UsersService {
     async validateUser(username: string, email: string, password: string): Promise<User>{
         return await this.userRepository.validateUser(username, email, password);
     }
+
+    sendVerificationLink(email: string) {
+        const payload = {
+          email: email
+        }
+    
+        const token = this.jwtService.sign(payload);
+    
+        const url = `${process.env.EMAIL_CONFIRMATION_URL}?token=${token}`;
+    
+        const text = `Selamat datang di aplikasi Angkotkita. Untuk Memverifikasi email Anda, klik link berikut: ${url}`;
+    
+        return this.emailService.sendMail({
+          to: email,
+          subject: 'Verifikasi Email',
+          text,
+        })
+    }
+
+    async decodeConfirmationToken(token: string) {
+      try {
+        const payload = await this.jwtService.verify(token, {
+          secret: 'koderahasia',
+        });
+  
+        if (typeof payload === 'object' && 'email' in payload) {
+          return payload.email;
+        }
+        throw new BadRequestException();
+      } catch (error) {
+        if (error?.name === 'TokenExpiredError') {
+          throw new BadRequestException('Email confirmation token expired');
+        }
+        throw new BadRequestException('Bad confirmation token');
+      }
+    }
+
+    async confirmEmail(email: string) {
+        const user = await this.getByEmail(email);
+        if (user.emailVerified) {
+          throw new BadRequestException('Email already confirmed');
+        } else {
+          const confirm = await this.EmailHasBeenConfirmed(email);
+          return {
+            status: 201,
+            message: 'Email confirmation successfully'
+          };
+        }
+    }
+
+    
 }

@@ -33,7 +33,7 @@ export class AuthService {
 
         const access_token = await this.createAccessToken(user); 
         const refresh_token = await this.createRefreshToken(user);
-        const berhasil = `berhasil login sebagai driver`;
+        const berhasil = `berhasil login sebagai Admin`;
         return { access_token, refresh_token, berhasil} as LoginResponse;
     }
 
