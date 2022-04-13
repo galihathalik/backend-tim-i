@@ -1,4 +1,4 @@
-import { InternalServerErrorException, ConflictException } from "@nestjs/common";
+import { InternalServerErrorException, ConflictException, Logger } from "@nestjs/common";
 import { query } from "express";
 import { filter } from "rxjs";
 import { EntityRepository, Repository } from "typeorm";
@@ -22,7 +22,7 @@ export class UserRepository extends Repository<User>{
         return await query.getMany();
     }
 
-    async registerPenumpang(createUserDto: CreateUserDto, createPenumpang: CreatePenumpangDto ,role): Promise<void> {
+    async registerPenumpang(createUserDto: CreateUserDto, createPenumpang: CreatePenumpangDto ,role): Promise<any> {
         const { username, password, email, num_phone} = createUserDto;
         
         const user = this.create();
@@ -35,16 +35,27 @@ export class UserRepository extends Repository<User>{
 
         try{
             await user.save();
+            return {
+                status: 201,
+                message: 'Success create account',
+                data: {
+                  id: user.id,
+                  username: user.username,
+                  email: user.email,
+                  number_Phone: user.num_phone,
+                  role: user.role
+                }
+            }
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
-                throw new ConflictException(`Email/Number Phone ${email}${num_phone} Already Used`);
+                throw new ConflictException(`Email/Number Phone ${email}/${num_phone} Already Used`);
             }else{
                 throw new InternalServerErrorException(e);
             }      
         }
     }
 
-    async registerSopir(createUserDto: CreateUserDto, role): Promise<void> {
+    async registerSopir(createUserDto: CreateUserDto, role): Promise<any> {
         const { username, password, email, num_phone} = createUserDto;
 
         const user = this.create();
@@ -57,6 +68,17 @@ export class UserRepository extends Repository<User>{
 
         try{
             await user.save();
+            return {
+                status: 201,
+                message: 'Success create account',
+                data: {
+                  id: user.id,
+                  username: user.username,
+                  email: user.email,
+                  number_Phone: user.num_phone,
+                  role: user.role
+                }
+            }
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
                 throw new ConflictException(`Email/Number Phone ${email}${num_phone} Already Used`);
@@ -66,7 +88,7 @@ export class UserRepository extends Repository<User>{
         }
     }
 
-    async registerAdmin(createUserDto: CreateUserDto, role): Promise<void> {
+    async registerAdmin(createUserDto: CreateUserDto, role): Promise<any> {
         const { username, password, email, num_phone} = createUserDto;
 
         const user = this.create();
@@ -79,6 +101,17 @@ export class UserRepository extends Repository<User>{
 
         try{
             await user.save();
+            return {
+                status: 201,
+                message: 'Success create account',
+                data: {
+                  id: user.id,
+                  username: user.username,
+                  email: user.email,
+                  number_Phone: user.num_phone,
+                  role: user.role
+                }
+            }
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
                 throw new ConflictException(`Email/Number Phone ${email}${num_phone} Already Used`);

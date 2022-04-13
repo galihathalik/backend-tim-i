@@ -16,6 +16,9 @@ export class Sopir extends BaseEntity{
     @Column()
     Foto: string;
 
+    @Column({ default: "offline" })
+    Status: string;
+
     @Column()
     Posisi: string;
 
