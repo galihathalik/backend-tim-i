@@ -31,10 +31,24 @@ export class AuthService {
             throw new UnauthorizedException('Anda Tidak Memiliki Akses');
         }
 
-        const access_token = await this.createAccessToken(user); 
-        const refresh_token = await this.createRefreshToken(user);
-        const berhasil = `berhasil login sebagai Admin`;
-        return { access_token, refresh_token, berhasil} as LoginResponse;
+        if(user) {
+            const valid = this.usersService.compare(password, user.password);
+            if(valid){
+                const payload = { email: user.email, sub: user.id};
+
+                const access_token = await this.createAccessToken(user); 
+                const refresh_token = await this.createRefreshToken(user);
+
+                return{
+                    status: 201,
+                    message: `Berhasil Login Sebagai Admin`,
+                    access_token,
+                    refresh_token
+                } as LoginResponse;
+            } else {
+                throw new UnauthorizedException("Silahkan Cek Email Anda Terlebih Dahulu, Kami telah Mengirimkan Link Verifikasi Ke Email Anda")
+            }
+        }
     }
 
     async loginCustomer(LoginDto: LoginDto): Promise<LoginResponse>{
@@ -48,10 +62,27 @@ export class AuthService {
             throw new UnauthorizedException('Anda Tidak Memiliki Akses');
         }
 
-        const access_token = await this.createAccessToken(user); 
-        const refresh_token = await this.createRefreshToken(user);
-        const berhasil = `berhasil login sebagai customer`;
-        return { access_token, refresh_token, berhasil} as LoginResponse;
+        if(user) {
+            const valid = this.usersService.compare(password, user.password);
+            if(valid){
+                const check = await this.usersService.checkVerifiedEmail(user.email);
+                if(check){
+                    const payload = { email: user.email, sub: user.id};
+
+                    const access_token = await this.createAccessToken(user); 
+                    const refresh_token = await this.createRefreshToken(user);
+
+                    return{
+                        status: 201,
+                        message: `Berhasil Login Sebagai Admin`,
+                        access_token,
+                        refresh_token
+                    } as LoginResponse;
+                } else {
+                    throw new UnauthorizedException("Silahkan Cek Email Anda Terlebih Dahulu, Kami telah Mengirimkan Link Verifikasi Ke Email Anda")
+                }
+            }
+        }
     }
 
     async loginDriver(LoginDto: LoginDto): Promise<LoginResponse>{
@@ -65,10 +96,27 @@ export class AuthService {
             throw new UnauthorizedException('Anda Tidak Memiliki Akses');
         }
 
-        const access_token = await this.createAccessToken(user); 
-        const refresh_token = await this.createRefreshToken(user);
-        const berhasil = `berhasil login sebagai driver`;
-        return { access_token, refresh_token, berhasil} as LoginResponse;
+        if(user) {
+            const valid = this.usersService.compare(password, user.password);
+            if(valid){
+                const check = await this.usersService.checkVerifiedEmail(user.email);
+                if(check){
+                    const payload = { email: user.email, sub: user.id};
+
+                    const access_token = await this.createAccessToken(user); 
+                    const refresh_token = await this.createRefreshToken(user);
+
+                    return{
+                        status: 201,
+                        message: `Berhasil Login Sebagai Admin`,
+                        access_token,
+                        refresh_token
+                    } as LoginResponse;
+                } else {
+                    throw new UnauthorizedException("Silahkan Cek Email Anda Terlebih Dahulu, Kami telah Mengirimkan Link Verifikasi Ke Email Anda")
+                }
+            }
+        }
     }
 
     async refreshAccessToken(refreshTokenDto: refreshAccessTokenDto): Promise<{ access_token: string }>{

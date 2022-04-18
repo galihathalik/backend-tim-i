@@ -12,6 +12,8 @@ import RoleGuard from 'src/modules/main/auth/guard/roles.guard';
 import Role from 'src/entities/roles.enum';
 import TokenDto from './dto/token.dto';
 import { CreatePenumpangDto } from './dto/create-penumpang.dto';
+import { CreateAdminDto } from './dto/create-admin.dto';
+import { CreateSopirDto } from './dto/create-sopir.dto';
 
 @Controller('users')
 export class UsersController {
@@ -30,27 +32,41 @@ export class UsersController {
     }
 
     @Post('register-admin')
-    @UseGuards(JwtGuard)
     @UseGuards(RoleGuard(Role.Admin))
-    async RegisterAdmin(@Body() payload: CreateUserDto): Promise<void>{
+    @UseGuards(JwtGuard)
+    async RegisterAdmin(@Body() payload: CreateUserDto){
         let role = 'Admin';
         return this.usersService.RegisterAdmin(payload, role);
     }
 
     @Post('register-customer')
-    async RegisterCustomer(@Body() createUser: CreateUserDto, @Body() createPenumpang: CreatePenumpangDto): Promise<void>{
+    async RegisterCustomer(@Body() createUser: CreateUserDto){
         let role = 'Customer';
-        const user = this.usersService.RegisterCustomer(createUser, createPenumpang, role);
-        await this.usersService.sendVerificationLink(createUser.email);
-        return user;        
+        return await this.usersService.RegisterCustomer(createUser, role);        
     }
 
     @Post('register-driver')
-    async RegisterDriver(@Body() payload: CreateUserDto): Promise<void>{
+    async RegisterDriver(@Body() payload: CreateUserDto){
         let role = 'Driver';
-        const user =  this.usersService.RegisterDriver(payload, role);
-        await this.usersService.sendVerificationLink(payload.email);
-        return user;
+        return await this.usersService.RegisterDriver(payload, role);
+    }
+
+    @Put('account-setup-admin/:id')
+    @UseGuards(JwtGuard)
+    async accountSetupAdmin(@Param('id', UUIDValidationPipe) id: string, @Body() payload: CreateAdminDto,){
+        return this.usersService.accountSetupAdmin(id,payload);
+    }
+
+    @Put('account-setup-penumpang/:id')
+    @UseGuards(JwtGuard)
+    async accountSetupPenumpang(@Param('id', UUIDValidationPipe) id: string, @Body() payload: CreatePenumpangDto,){
+        return this.usersService.accountSetupPenumpang(id,payload);
+    }
+
+    @Put('account-setup-sopir/:id')
+    @UseGuards(JwtGuard)
+    async accountSetupSopir(@Param('id', UUIDValidationPipe) id: string, @Body() payload: CreateSopirDto,){
+        return this.usersService.accountSetupSopir(id,payload);
     }
 
     @Put('update-customer/:id')
@@ -69,10 +85,11 @@ export class UsersController {
         return this.usersService.deleteUser(id);
     }
 
-    @Post('confirm')
-    async confirmEmail(@Query() confirmationData: TokenDto) {
-        const email = await this.usersService.decodeConfirmationToken(confirmationData.token);
-        await this.usersService.confirmEmail(email);
+    @Get('confirm/:id')
+    async confirmEmail(@Param('id', UUIDValidationPipe) id: string) {
+        const user = await this.usersService.getUserById(id);
+        const userEmail = user.email;
+        await this.usersService.confirmEmail(userEmail);
     }
     
 }

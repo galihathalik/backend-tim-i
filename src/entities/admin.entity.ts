@@ -6,7 +6,7 @@ export class Admin extends BaseEntity{
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @OneToOne(() => User, user => user.id)
+    @OneToOne(() => User, user => user.id, {onDelete:'CASCADE'})
     @JoinColumn()
     user: User;
 

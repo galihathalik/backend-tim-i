@@ -7,7 +7,7 @@ import { User } from "src/entities/users.entity";
 import * as bcrypt from 'bcrypt';
 import { Duplex } from "stream";
 import { CreatePenumpangDto } from "../dto/create-penumpang.dto";
-import { PenumpangRepository } from "./pelanggan.repository";
+import { PenumpangRepository } from "./penumpang.repository";
 import { SopirRepository } from "./sopir.repository";
 import { AdminRepository } from "./admin.repository";
 
@@ -22,7 +22,7 @@ export class UserRepository extends Repository<User>{
         return await query.getMany();
     }
 
-    async registerPenumpang(createUserDto: CreateUserDto, createPenumpang: CreatePenumpangDto ,role): Promise<any> {
+    async registerPenumpang(createUserDto: CreateUserDto, role) {
         const { username, password, email, num_phone} = createUserDto;
         
         const user = this.create();
@@ -34,18 +34,7 @@ export class UserRepository extends Repository<User>{
         user.role = role;
 
         try{
-            await user.save();
-            return {
-                status: 201,
-                message: 'Success create account',
-                data: {
-                  id: user.id,
-                  username: user.username,
-                  email: user.email,
-                  number_Phone: user.num_phone,
-                  role: user.role
-                }
-            }
+            return await user.save();
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
                 throw new ConflictException(`Email/Number Phone ${email}/${num_phone} Already Used`);
@@ -55,10 +44,11 @@ export class UserRepository extends Repository<User>{
         }
     }
 
-    async registerSopir(createUserDto: CreateUserDto, role): Promise<any> {
+    async registerSopir(createUserDto: CreateUserDto, role) {
         const { username, password, email, num_phone} = createUserDto;
 
         const user = this.create();
+        
         user.username = username;
         user.salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(password, user.salt);
@@ -67,18 +57,7 @@ export class UserRepository extends Repository<User>{
         user.role = role;
 
         try{
-            await user.save();
-            return {
-                status: 201,
-                message: 'Success create account',
-                data: {
-                  id: user.id,
-                  username: user.username,
-                  email: user.email,
-                  number_Phone: user.num_phone,
-                  role: user.role
-                }
-            }
+            return await user.save();
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
                 throw new ConflictException(`Email/Number Phone ${email}${num_phone} Already Used`);
@@ -88,7 +67,7 @@ export class UserRepository extends Repository<User>{
         }
     }
 
-    async registerAdmin(createUserDto: CreateUserDto, role): Promise<any> {
+    async registerAdmin(createUserDto: CreateUserDto, role) {
         const { username, password, email, num_phone} = createUserDto;
 
         const user = this.create();
@@ -100,18 +79,7 @@ export class UserRepository extends Repository<User>{
         user.role = role;
 
         try{
-            await user.save();
-            return {
-                status: 201,
-                message: 'Success create account',
-                data: {
-                  id: user.id,
-                  username: user.username,
-                  email: user.email,
-                  number_Phone: user.num_phone,
-                  role: user.role
-                }
-            }
+            return await user.save();
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
                 throw new ConflictException(`Email/Number Phone ${email}${num_phone} Already Used`);
