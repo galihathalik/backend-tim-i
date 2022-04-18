@@ -1,6 +1,6 @@
 export enum Role{
-    Driver = 'Driver',
-    Customer = 'Customer',
+    Sopir = 'Sopir',
+    Penumpang = 'Penumpang',
     Admin = 'Admin',
 }
 

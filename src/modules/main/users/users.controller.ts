@@ -39,16 +39,16 @@ export class UsersController {
         return this.usersService.RegisterAdmin(payload, role);
     }
 
-    @Post('register-customer')
-    async RegisterCustomer(@Body() createUser: CreateUserDto){
-        let role = 'Customer';
-        return await this.usersService.RegisterCustomer(createUser, role);        
+    @Post('register-penumpang')
+    async RegisterPenumpang(@Body() createUser: CreateUserDto){
+        let role = 'Penumpang';
+        return await this.usersService.RegisterPenumpang(createUser, role);        
     }
 
-    @Post('register-driver')
-    async RegisterDriver(@Body() payload: CreateUserDto){
-        let role = 'Driver';
-        return await this.usersService.RegisterDriver(payload, role);
+    @Post('register-sopir')
+    async RegisterSopir(@Body() payload: CreateUserDto){
+        let role = 'Sopir';
+        return await this.usersService.RegisterSopir(payload, role);
     }
 
     @Put('account-setup-admin/:id')

@@ -16,14 +16,14 @@ export class AuthController {
         return this.authService.loginAdmin(LoginDto);
     }
 
-    @Post('login-customer')
-    async loginCustomer(@Body() LoginDto: LoginDto): Promise<LoginResponse>{
-        return this.authService.loginCustomer(LoginDto);
+    @Post('login-penumpang')
+    async loginPenumpang(@Body() LoginDto: LoginDto): Promise<LoginResponse>{
+        return this.authService.loginPenumpang(LoginDto);
     }
 
-    @Post('login-driver')
-    async loginDriver(@Body() LoginDto: LoginDto): Promise<LoginResponse>{
-        return this.authService.loginDriver(LoginDto);
+    @Post('login-sopir')
+    async loginSopir(@Body() LoginDto: LoginDto): Promise<LoginResponse>{
+        return this.authService.loginSopir(LoginDto);
     }
 
     @Post('refresh-token')

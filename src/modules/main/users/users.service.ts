@@ -85,7 +85,7 @@ export class UsersService {
        }
     }
 
-    async RegisterCustomer(createUserDto: CreateUserDto, role){
+    async RegisterPenumpang(createUserDto: CreateUserDto, role){
       const user = await this.userRepository.registerPenumpang(createUserDto, role)
       const sendLink = await this.sendVerificationLink(user.email, user.id);
       if(user){
@@ -104,7 +104,7 @@ export class UsersService {
       }
     }
 
-    async RegisterDriver(createUserDto: CreateUserDto, role){
+    async RegisterSopir(createUserDto: CreateUserDto, role){
       const user = await this.userRepository.registerSopir(createUserDto, role)
       const sendLink = await this.sendVerificationLink(user.email, user.id);
       if(user){

@@ -51,14 +51,14 @@ export class AuthService {
         }
     }
 
-    async loginCustomer(LoginDto: LoginDto): Promise<LoginResponse>{
+    async loginPenumpang(LoginDto: LoginDto): Promise<LoginResponse>{
         const { username, email, password } = LoginDto;
 
         const user = await this.usersService.validateUser(username, email, password);
         if(!user){
             throw new UnauthorizedException('Username atau Email atau Password salah');
         }
-        if(user.role != `Customer`){
+        if(user.role != `Penumpang`){
             throw new UnauthorizedException('Anda Tidak Memiliki Akses');
         }
 
@@ -85,14 +85,14 @@ export class AuthService {
         }
     }
 
-    async loginDriver(LoginDto: LoginDto): Promise<LoginResponse>{
+    async loginSopir(LoginDto: LoginDto): Promise<LoginResponse>{
         const { username, email, password } = LoginDto;
 
         const user = await this.usersService.validateUser(username, email, password);
         if(!user){
             throw new UnauthorizedException('Username atau Email atau Password salah');
         }
-        if(user.role != `Driver`){
+        if(user.role != `Sopir`){
             throw new UnauthorizedException('Anda Tidak Memiliki Akses');
         }
 
