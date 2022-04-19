@@ -6,10 +6,16 @@ import { LoginDto } from './dto/login.dto';
 import { refreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { GetUser } from './get-user.decorator';
 import { LoginResponse } from './interface/login-response.interface';
+import { ForgetPasswordDto } from './dto/forget-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 export class AuthController { 
-    constructor(private readonly authService: AuthService){}
+    constructor(
+        private readonly authService: AuthService,
+        private readonly usersService: UsersService
+    ){}
 
     @Post('login-admin')
     async loginAdmin(@Body() LoginDto: LoginDto): Promise<LoginResponse>{
@@ -36,4 +42,20 @@ export class AuthController {
     async revokeRefreshToken(@Param('id') id: string): Promise<void>{
         return this.authService.revokeRefreshToken(id);
     }
+
+    @Post('forget-password')
+    async sendEmailForgetPassword(@Body() body: ForgetPasswordDto){
+        const sendLink = await this.usersService.sendEmailForgetPasswordLink(body.email);
+        return{
+            statuscode: 201,
+            message: 'Cek Email Anda Untuk Langkah Selanjutnya'
+        }
+    }
+
+    @Post('reset-password')
+    async resetPassowrd(@Body() body: ResetPasswordDto){
+        const email = await this.usersService.decodeConfirmationToken(body.token);
+        return await this.usersService.resetPassword(email, body);
+    }
+
 }

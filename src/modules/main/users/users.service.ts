@@ -216,6 +216,36 @@ export class UsersService {
         }
     }
 
+    async sendEmailForgetPasswordLink(email: string){
+      const user = await this.getByEmail(email);
+      if(!user){
+        throw new BadRequestException('Email Tidak Ditemukan');
+      } else{
+        const payload = { 
+          email: email 
+        };
+        const token = this.jwtService.sign(payload);
+        const url = `${process.env.RESET_PASSWORD_URL}?token=${token}`;
+        const text = `Selamat Datang Di Aplikasi Angkotkita. Untuk Mereset Password, Silahkan Klik Link Berikut: ${url}`;
+
+        return this.emailService.sendMail({
+          to: email,
+          subject: `Reset Password`,
+          text,
+        })
+      }
+    }
+
+    async resetPassword(email: string, ResetPasswordDto): Promise<void>{
+      const { password } = ResetPasswordDto;
+
+      const user = await this.getByEmail(email);
+      user.salt = await bcrypt.genSalt();
+      user.password = await bcrypt.hash(password, user.salt);
+
+      await user.save();
+    }
+
     hash(plainPassword){
       const salt = bcrypt.genSalt();
       const hash = bcrypt.hashSync(plainPassword, parseInt(salt))
