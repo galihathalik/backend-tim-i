@@ -78,7 +78,6 @@ export class UsersService {
              id: user.id,
              username: user.username,
              email: user.email,
-             number_Phone: user.num_phone,
              role: user.role
            }
          }
@@ -97,7 +96,6 @@ export class UsersService {
             id: user.id,
             username: user.username,
             email: user.email,
-            number_Phone: user.num_phone,
             role: user.role
           }
         }
@@ -116,7 +114,6 @@ export class UsersService {
             id: user.id,
             username: user.username,
             email: user.email,
-            number_Phone: user.num_phone,
             role: user.role
           }
         }

@@ -23,21 +23,20 @@ export class UserRepository extends Repository<User>{
     }
 
     async registerPenumpang(createUserDto: CreateUserDto, role) {
-        const { username, password, email, num_phone} = createUserDto;
+        const { username, password, email} = createUserDto;
         
         const user = this.create();
         user.username = username;
         user.salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(password, user.salt);
         user.email = email;
-        user.num_phone = num_phone;
         user.role = role;
 
         try{
             return await user.save();
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
-                throw new ConflictException(`Email/Number Phone ${email}/${num_phone} Already Used`);
+                throw new ConflictException(`Email "${email}" Already Used`);
             }else{
                 throw new InternalServerErrorException(e);
             }      
@@ -45,7 +44,7 @@ export class UserRepository extends Repository<User>{
     }
 
     async registerSopir(createUserDto: CreateUserDto, role) {
-        const { username, password, email, num_phone} = createUserDto;
+        const { username, password, email} = createUserDto;
 
         const user = this.create();
         
@@ -53,14 +52,13 @@ export class UserRepository extends Repository<User>{
         user.salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(password, user.salt);
         user.email = email;
-        user.num_phone = num_phone;
         user.role = role;
 
         try{
             return await user.save();
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
-                throw new ConflictException(`Email/Number Phone ${email}${num_phone} Already Used`);
+                throw new ConflictException(`Email "${email}" Is Already Used`);
             }else{
                 throw new InternalServerErrorException(e);
             }      
@@ -68,21 +66,20 @@ export class UserRepository extends Repository<User>{
     }
 
     async registerAdmin(createUserDto: CreateUserDto, role) {
-        const { username, password, email, num_phone} = createUserDto;
+        const { username, password, email} = createUserDto;
 
         const user = this.create();
         user.username = username;
         user.salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(password, user.salt);
         user.email = email;
-        user.num_phone = num_phone;
         user.role = role;
 
         try{
             return await user.save();
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
-                throw new ConflictException(`Email/Number Phone ${email}${num_phone} Already Used`);
+                throw new ConflictException(`Email "${email}" Is Already Used`);
             }else{
                 throw new InternalServerErrorException(e);
             }      
