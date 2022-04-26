@@ -35,8 +35,8 @@ export class UserRepository extends Repository<User>{
         try{
             return await user.save();
         }catch(e) {
-            if(e.code = 'ER_DUB_ENTRY'){
-                throw new ConflictException(`Email "${email}" Already Used`);
+            if(e){
+                throw new ConflictException(`Email ${email} Already Used`);
             }else{
                 throw new InternalServerErrorException(e);
             }      
@@ -58,7 +58,7 @@ export class UserRepository extends Repository<User>{
             return await user.save();
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
-                throw new ConflictException(`Email "${email}" Is Already Used`);
+                throw new ConflictException(`Email ${email} Is Already Used`);
             }else{
                 throw new InternalServerErrorException(e);
             }      
@@ -79,7 +79,7 @@ export class UserRepository extends Repository<User>{
             return await user.save();
         }catch(e) {
             if(e.code = 'ER_DUB_ENTRY'){
-                throw new ConflictException(`Email "${email}" Is Already Used`);
+                throw new ConflictException(`Email ${email} Is Already Used`);
             }else{
                 throw new InternalServerErrorException(e);
             }      
