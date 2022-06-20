@@ -1,7 +1,6 @@
-export enum Role{
-    Sopir = 'Sopir',
-    Penumpang = 'Penumpang',
-    Admin = 'Admin',
+export enum Role {
+  Pembeli = 'Pembeli',
+  Admin = 'Admin',
 }
 
 export default Role;

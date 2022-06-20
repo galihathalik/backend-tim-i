@@ -9,8 +9,12 @@ import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { JwtStrategy } from '../../../utils/jwt.strategy';
 
 @Module({
-  imports: [JwtModule.register(jwtConfig), TypeOrmModule.forFeature([RefreshTokenRepository]), UsersModule],
+  imports: [
+    JwtModule.register(jwtConfig),
+    TypeOrmModule.forFeature([RefreshTokenRepository]),
+    UsersModule,
+  ],
   providers: [AuthService, JwtStrategy],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
 export class AuthModule {}

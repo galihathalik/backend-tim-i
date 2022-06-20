@@ -9,10 +9,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from './users.entity';
+import { User } from 'src/entities/users.entity';
 
 @Entity()
-export class Admin extends BaseEntity {
+export class Pembeli extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -23,6 +23,15 @@ export class Admin extends BaseEntity {
   @Column()
   NamaLengkap: string;
 
+  @Column({ default: false })
+  JualVerified: boolean;
+
   @Column()
-  Foto: string;
+  paket: string;
+
+  @Column()
+  Foto_Profil: string;
+
+  @Column()
+  Path_Foto_Profil: string;
 }

@@ -1,17 +1,25 @@
-import { IsEmail, IsNotEmpty, IsOptional, MinLength } from "class-validator";
+import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
+import { required } from 'joi';
 
-export class CreateUserDto{
-    @IsNotEmpty()
-    username: string;
+export class CreateUserDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  username: string;
 
-    @IsNotEmpty()
-    @MinLength(6)
-    password: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @MinLength(6)
+  password: string;
 
-    @IsNotEmpty()
-    @IsEmail()
-    email: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
-    @IsOptional()
-    num_phone: string;
+  @ApiProperty()
+  @IsOptional()
+  num_phone: string;
 }
+
+export class createUserDto extends OmitType(CreateUserDto, ['username']) {}

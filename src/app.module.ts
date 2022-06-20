@@ -9,9 +9,12 @@ import { User } from './entities/users.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Penumpang } from './entities/penumpang.entity';
-import { Sopir } from './entities/sopir.entity';
+import { Pembeli } from './entities/pembeli.entity';
 import { Admin } from './entities/admin.entity';
+import { PasangController } from './modules/main/pasang/pasang.controller';
+import { PasangService } from './modules/main/pasang/pasang.service';
+import { PasangModule } from './modules/main/pasang/pasang.module';
+import { Pasang } from './entities/pasang.entity';
 
 const dbConfigMysql: DbConfigMysql = AppConfig().db.mysql;
 const dbConfigRedis: DbConfigRedis = AppConfig().db.redis;
@@ -25,23 +28,17 @@ const dbConfigRedis: DbConfigRedis = AppConfig().db.redis;
       username: dbConfigMysql.user,
       password: dbConfigMysql.password,
       database: dbConfigMysql.database,
-      entities: [
-        User,
-        Penumpang,
-        Sopir,
-        Admin,
-        RefreshToken
-      ],
-      synchronize: true
-    }), 
-    UsersModule, 
+      entities: [User, Pembeli, Admin, RefreshToken, Pasang],
+      synchronize: true,
+    }),
+    UsersModule,
     AuthModule,
     ConfigModule.forRoot({
       load: [AppConfig],
     }),
+    PasangModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
- 

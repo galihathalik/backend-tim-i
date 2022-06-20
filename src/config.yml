@@ -8,7 +8,7 @@ db:
     port: 3306
     user: 'root'
     password: ''
-    database: 'ankot-id_db'
+    database: 'ohome360'
   redis:
     host: 'localhost'
     port: 6379
